@@ -4,16 +4,14 @@ author: tj-actions
 inputs:
   token:
     description: 'GITHUB_TOKEN or a Repo scoped PAT'
-    required: true
-    default: ${{ github.token }}
-  repository_owner:
-    description: 'Repository owner where the binary is located'
     required: false
-    default: ${{ github.repository_owner }}
+    default: ${{ github.token }}
+  repository-owner:
+    description: 'Repository owner where the binary is located'
+    required: true
   repository:
     description: 'Repository where the binary is located'
-    required: false
-    default: ${{ github.repository }}
+    required: true
   version:
     description: 'Version of the binary to install'
     required: false
@@ -21,6 +19,10 @@ inputs:
   language-type:
     description: 'Language type of package to install: `rust` or `go`'
     required: true
+  add-prefix-to-version:
+    description: "Add v to the version if it doesn't have it"
+    required: false
+    default: true
 
 outputs:
   binary_path:
@@ -39,9 +41,10 @@ runs:
         # INPUT_<VARIABLE_NAME> is not available in Composite run steps
         # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#example-specifying-inputs
         INPUT_TOKEN: ${{ inputs.token }}
-        INPUT_REPOSITORY_OWNER: ${{ inputs.repository_owner }}
+        INPUT_REPOSITORY_OWNER: ${{ inputs.repository-owner }}
         INPUT_REPOSITORY: ${{ inputs.repository }}
         INPUT_VERSION: ${{ inputs.version }}
+        INPUT_ADD_PREFIX_TO_VERSION: ${{ inputs.add-prefix-to-version }}
     - run: |
         bash $GITHUB_ACTION_PATH/go-install.sh
       id: setup-bin-go
@@ -51,7 +54,7 @@ runs:
         # INPUT_<VARIABLE_NAME> is not available in Composite run steps
         # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#example-specifying-inputs
         INPUT_TOKEN: ${{ inputs.token }}
-        INPUT_REPOSITORY_OWNER: ${{ inputs.repository_owner }}
+        INPUT_REPOSITORY_OWNER: ${{ inputs.repository-owner }}
         INPUT_REPOSITORY: ${{ inputs.repository }}
         INPUT_VERSION: ${{ inputs.version }}
 

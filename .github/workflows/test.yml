@@ -10,21 +10,24 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
     name: Test setup-bin
+    runs-on: ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: shellcheck
         uses: reviewdog/action-shellcheck@v1
       - name: Run setup-bin go package
         id: setup-bin-go
         uses: ./
         with:
-          token: ${{ secrets.PAT_TOKEN }}
-          repository_owner: tj-actions
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository-owner: tj-actions
           repository: auto-doc
-          version: latest
           language-type: go
       - name: Show output
         run: |
@@ -33,11 +36,22 @@ jobs:
         id: setup-bin-rust
         uses: ./
         with:
-          token: ${{ secrets.PAT_TOKEN }}
-          repository_owner: tj-actions
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository-owner: tj-actions
           repository: json2file
-          version: latest
           language-type: rust
       - name: Show output
         run: |
           echo "setup-bin-rust: ${{ steps.setup-bin-rust.outputs.binary_path }}"
+      - name: Run git-cliff rust package
+        id: setup-bin-rust-2
+        uses: ./
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository-owner: orhun
+          repository: git-cliff
+          language-type: rust
+          add-prefix-to-version: false
+      - name: Show output
+        run: |
+          echo "setup-bin-rust-2: ${{ steps.setup-bin-rust-2.outputs.binary_path }}"
