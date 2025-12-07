@@ -18,7 +18,7 @@ jobs:
         platform: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.1
       - name: shellcheck
         uses: reviewdog/action-shellcheck@v1
       - name: Run setup-bin go package
